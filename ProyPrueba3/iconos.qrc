@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/recursos">
+        <file>bass-drum.png</file>
+        <file>play.png</file>
+        <file>hihat.png</file>
+        <file>kick-drum.png</file>
+        <file>snare-drum.png</file>
+        <file>crash.png</file>
+        <file>corchea.png</file>
+        <file>blanca.png</file>
+        <file>negra.png</file>
+        <file>semicorchea.png</file>
+        <file>crash2.png</file>
+    </qresource>
+</RCC>
