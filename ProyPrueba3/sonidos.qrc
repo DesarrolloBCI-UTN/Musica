@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/recursos2"/>
-    <qresource prefix="/sonidos">
-        <file>kick_7.wav</file>
-        <file>Closed-Hi-Hat-1.wav</file>
-        <file>Crash-Cymbal-1.wav</file>
-        <file>Ensoniq-SQ-1-Rock-Snare.wav</file>
-    </qresource>
-</RCC>
