@@ -1,13 +1,14 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2019-05-25T11:32:41
+# Project created by QtCreator 2019-06-09T20:44:20
 #
 #-------------------------------------------------
 
 QT       += core gui widgets \
          multimedia
 
-TARGET = PtoyPrueba3
+
+TARGET = ProyMusica
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -38,10 +39,5 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES += \
-    ../../../Prueba/bass-drum.png \
-    ../../../Prueba/play.png
-
 RESOURCES += \
-    iconos.qrc \
-    sonidos.qrc
+    recursos.qrc

@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-   // QMediaPlayer *reproductor = new QMediaPlayer();
 
 }
 
@@ -27,19 +26,13 @@ MainWindow::~MainWindow()
 }
 
 
-
-
-/* QMessageBox::StandardButton respuesta;
-              respuesta = QMessageBox::question(this, "Cofirmar autor", ListaDatos.at(i).autor,
-                                            QMessageBox::Yes|QMessageBox::No);*/
-
-//array de reproductores
+//armar array de reproductores
 void MainWindow::on_BotonBombo_clicked()
 {
     QMediaPlayer *reproductor1 = new QMediaPlayer();
     QMediaPlayer *reproductor2 = new QMediaPlayer();
     reproductor1->setMedia(QUrl("qrc:/sonidos/kick_7.wav"));
-    reproductor2->setMedia(QUrl("qrc:/sonidos/Crash-Cymbal-1.wav"));
+    reproductor2->setMedia(QUrl("qrc:/Closed-Hi-Hat-1.wav"));
     reproductor1->play();
     reproductor2->play();
 }
@@ -53,9 +46,12 @@ void MainWindow::on_BotonHiHat_clicked()
 
 void MainWindow::on_BotonRedoblante_clicked()
 {
-    QMediaPlayer *reproductor = new QMediaPlayer();
-    reproductor->setMedia(QUrl("qrc:/sonidos/Ensoniq-SQ-1-Rock-Snare.wav"));
-    reproductor->play();
+    QMediaPlayer *reproductor1 = new QMediaPlayer();
+    QMediaPlayer *reproductor2 = new QMediaPlayer();
+    reproductor1->setMedia(QUrl("qrc:/sonidos/Ensoniq-SQ-1-Rock-Snare.wav"));
+    reproductor2->setMedia(QUrl("qrc:/Closed-Hi-Hat-1.wav"));
+    reproductor1->play();
+    reproductor2->play();
 }
 
 void MainWindow::on_BotonCrash_clicked()
