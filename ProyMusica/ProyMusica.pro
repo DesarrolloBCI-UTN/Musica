@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets \
+QT       += core gui network widgets \
          multimedia
 
 
@@ -26,10 +26,12 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        tcpserver.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+        tcpserver.h
 
 FORMS += \
         mainwindow.ui
