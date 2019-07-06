@@ -13,7 +13,7 @@ void MainWindow::socket_events()
     connect(socket, SIGNAL(connected()), this, SLOT(socket_connected()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(socket_disconnected()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socket_error()));
-    connect(socket, SIGNAL(readyRead()), this, SLOT(socket_readyRead()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(seleccion()));
     connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socket_stateChanged()));
 }
 
@@ -109,10 +109,9 @@ void MainWindow::socket_readyRead()
     while(socket->bytesAvailable())
     {
         QString data = socket->readAll();
-        log("socket_readyRead [" + QString::number(data.size()) + "] : \n" + data);
         rcv = data;
+        log("socket_readyRead [" + QString::number(data.size()) + "] : \n" + rcv);
     }
-
 }
 void MainWindow::socket_stateChanged()
 {

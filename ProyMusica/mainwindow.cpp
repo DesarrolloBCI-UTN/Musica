@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(b_tempo,SIGNAL(timeout()),this,SLOT(Barrido_Tempo()));
 
     b_instrumentos->start((ui->CB_Tiempo_barrido->currentIndex() + 1)*1000);
+
 }
 
 MainWindow::~MainWindow()
@@ -114,6 +115,7 @@ void MainWindow::on_BotonCrash_clicked()
 
 void MainWindow::Barrido_General()
 {
+    posicion %= 5;
     Blanco_general();   //pongo el fondo en blanco
     switch (posicion) {
     case 0:
@@ -131,16 +133,14 @@ void MainWindow::Barrido_General()
     case 4:
         ui->BotonPlay->setStyleSheet(PLAY_VERDE);
         break;
-    default:
-        posicion = 0;
-        break;
     }
-    posicion >= 4 ? posicion = 0: posicion++;
+    posicion++;
 }
 
 void MainWindow::Barrido_Instrumentos()
 {
-    Blanco_instrumentos();  //pongo el fondo en blanco
+    posicion %= 4;
+    Blanco_general();  //pongo el fondo en blanco
     switch (posicion) {
     case 0:
         ui->BotonBombo->setStyleSheet(BOMBO_AZUL);
@@ -154,16 +154,15 @@ void MainWindow::Barrido_Instrumentos()
     case 3:
         ui->BotonRedoblante->setStyleSheet(REDOBLANTE_VIOLETA);
         break;
-    default:
-        posicion = 0;
-        break;
     }
-    posicion >= 3 ? posicion = 0: posicion++;
+    posicion++;
 }
 
 void MainWindow::Barrido_Tempo()
 {
-    Blanco_tempo(); //pongo el fondo en blanco
+    if(posicion > 8)
+        posicion = 5;
+    Blanco_general(); //pongo el fondo en blanco
     switch (posicion) {
     case 5:
         ui->BotonBlanca->setStyleSheet(BLANCA_AZUL);
@@ -177,11 +176,8 @@ void MainWindow::Barrido_Tempo()
     case 8:
         ui->BotonSemiC->setStyleSheet(SEMIC_ROJO);
         break;
-    default:
-        posicion = 5;
-        break;
     }
-    posicion >= 8 ? posicion = 5: posicion++;
+    posicion++;
 }
 
 /*! \fn void MainWindow::Blanco_general()
@@ -194,36 +190,39 @@ void MainWindow::Blanco_general()
     ui->BotonCrash->setStyleSheet(CRASH_BLANCO);
     ui->BotonRedoblante->setStyleSheet(REDOBLANTE_BLANCO);
     ui->BotonPlay->setStyleSheet(PLAY_BLANCO);
-}
-
-/*! \fn void MainWindow::Blanco_instrumentos()
-    \brief Pone en background en blanco. Solo de los botones de instrumentos
-*/
-void MainWindow::Blanco_instrumentos()
-{
-    ui->BotonHiHat->setStyleSheet(HITHAT_BLANCO);
-    ui->BotonBombo->setStyleSheet(BOMBO_BLANCO);
-    ui->BotonCrash->setStyleSheet(CRASH_BLANCO);
-    ui->BotonRedoblante->setStyleSheet(REDOBLANTE_BLANCO);
-}
-
-/*! \fn void MainWindow::Blanco_tempo()
-    \brief Pone en background en blanco. Solo de los botones de tempo
-*/
-void MainWindow::Blanco_tempo()
-{
     ui->BotonBlanca->setStyleSheet(BLANCA_BLANCO);
     ui->BotonNegra->setStyleSheet(NEGRA_BLANCO);
     ui->BotonCorchea->setStyleSheet(CORCHEA_BLANCO);
     ui->BotonSemiC->setStyleSheet(SEMIC_BLANCO);
 }
 
+///*! \fn void MainWindow::Blanco_instrumentos()
+//    \brief Pone en background en blanco. Solo de los botones de instrumentos
+//*/
+//void MainWindow::Blanco_instrumentos()
+//{
+//    ui->BotonHiHat->setStyleSheet(HITHAT_BLANCO);
+//    ui->BotonBombo->setStyleSheet(BOMBO_BLANCO);
+//    ui->BotonCrash->setStyleSheet(CRASH_BLANCO);
+//    ui->BotonRedoblante->setStyleSheet(REDOBLANTE_BLANCO);
+//}
+
+///*! \fn void MainWindow::Blanco_tempo()
+//    \brief Pone en background en blanco. Solo de los botones de tempo
+//*/
+//void MainWindow::Blanco_tempo()
+//{
+
+//}
+
 void MainWindow::seleccion()
 {
     QString *sel = new QString();
     QString Potencia = ui->LE_Potencia_min->text();
 
-    if(strcmp(rcv.toLatin1().constData(), Potencia.toLatin1().constData()) >= 0)
+    rcv = socket->readAll();
+
+    if(strcmp(rcv.toStdString().c_str(), Potencia.toStdString().c_str()) >= 0)
     {
         b_instrumentos->stop();
         b_general->stop();
@@ -284,14 +283,20 @@ void MainWindow::seleccion()
             sel->append("tempo");
             break;
         }
+        posicion = 0;
         if((strcmp(sel->toStdString().c_str(),"instrumentos") == 0) && (play == false))
-            b_tempo->start((ui->CB_Tiempo_barrido->currentIndex()+1)*1000);
+        {
+            b_tempo->start((ui->CB_Tiempo_barrido->currentIndex() + 1)*1000);
+            posicion = 5;
+        }
+        if((strcmp(sel->toStdString().c_str(),"instrumentos") == 0) && (play == true))
+            b_instrumentos->start((ui->CB_Tiempo_barrido->currentIndex() + 1)*1000);
         if(strcmp(sel->toStdString().c_str(),"tempo") == 0)
-            b_general->start((ui->CB_Tiempo_barrido->currentIndex()+1)*1000);
+            b_general->start((ui->CB_Tiempo_barrido->currentIndex() + 1)*1000);
         if(strcmp(sel->toStdString().c_str(),"play") == 0)
-            b_instrumentos->start((ui->CB_Tiempo_barrido->currentIndex()+1)*1000);
+            b_instrumentos->start((ui->CB_Tiempo_barrido->currentIndex() + 1)*1000);
     }
-    delete []sel;
+//    delete []sel;
 }
 
 /*! \fn void MainWindow::Agregar_Instrumento(const char* sonido)

@@ -41,8 +41,8 @@ private slots:
     void Barrido_Instrumentos();
     void Barrido_Tempo();
     void Blanco_general();
-    void Blanco_instrumentos();
-    void Blanco_tempo();
+//    void Blanco_instrumentos();
+//    void Blanco_tempo();
     void seleccion();
     void Agregar_Instrumento(const char*);
     void Agregar_Tempo(const char *);
