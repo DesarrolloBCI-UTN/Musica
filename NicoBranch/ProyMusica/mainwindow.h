@@ -67,11 +67,11 @@ private:
     QVector<QString> lista_play;
     QString rcv;
     int i_lista;
-    QMediaPlayer vectorbombo[7];
-    QMediaPlayer vectorcrash[7];
-    QMediaPlayer vectorredo[7];
-    QMediaPlayer vectorHH[7];
-
+    QVector<QMediaPlayer*> vectorbombo;
+    QVector<QMediaPlayer*> vectorcrash;
+    QVector<QMediaPlayer*> vectorredo;
+    QVector<QMediaPlayer*> vectorHH;
+    QVector<QMediaPlayer *> prueba;
 private:
     void log(QString msg);
     void socket_events();

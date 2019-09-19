@@ -41,6 +41,7 @@
 #define HITHAT_SONIDO       "qrc:/sonidos/Closed-Hi-Hat-1.wav"
 #define BOMBO_SONIDO        "qrc:/sonidos/kick_7.wav"
 #define REDOBLANTE_SONIDO   "qrc:/sonidos/Ensoniq-SQ-1-Rock-Snare.wav"
+#define RUIDO_BLANCO        "qrc:/sonidos/nada.mp3"
 //-----------------------------------------------------------------------------------------------------------------------------------
 
 #define TIEMPO_BARRIDO      2000
@@ -296,10 +297,11 @@ void MainWindow::Barrido_Tempo()
 
 void MainWindow::Barrido_Reproduccion(){
     for(int i=0;i<7;i++){
-        vectorbombo[i].play();
-        vectorcrash[i].play();
-        vectorredo[i].play();
-        vectorHH[i].play();
+        vectorbombo.takeAt(i)->play();
+//        vectorbombo.play();
+//        vectorcrash.play();
+//        vectorredo.play();
+//        vectorHH.play();
         i%=7;
     }
 }
@@ -439,102 +441,145 @@ void MainWindow::Get_Tempo(){
 
 void MainWindow::Agregar_Tempo(const char *tempo)
 {
+    QMediaPlayer aux, aux2;
     QString t(tempo);
     if(t == "Blanca") {
-        if(lista_play.data()[--i_lista] == BOMBO_SONIDO)
-            vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
-        if(lista_play.data()[--i_lista] == HITHAT_SONIDO)
-            vectorHH[0].setMedia(QUrl(HITHAT_SONIDO));
-        if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO)
-            vectorredo[0].setMedia(QUrl(REDOBLANTE_SONIDO));
-        if(lista_play.data()[--i_lista] == CRASH_SONIDO)
-            vectorcrash[0].setMedia(QUrl(CRASH_SONIDO));
+        if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
+            aux.setMedia(QUrl(BOMBO_SONIDO));
+            aux.setMedia(QUrl(RUIDO_BLANCO));
+            aux.play();
+            vectorbombo.insert(0,&aux);
+            vectorbombo.fill(&aux2,6);
+            i_lista++;
+            }else i_lista++;
+        if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
+            aux.setMedia(QUrl(HITHAT_SONIDO));
+            vectorHH.insert(0,&aux);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
+            aux.setMedia(QUrl(REDOBLANTE_SONIDO));
+            vectorredo.insert(0,&aux);
+            vectorredo.fill(&aux2,6);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == CRASH_SONIDO){
+            aux.setMedia(QUrl(BOMBO_SONIDO));
+            vectorcrash.insert(0,&aux);
+            i_lista++;
+        }else i_lista++;
     }
     else if (t == "Negra") {
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
-            vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[4].setMedia(QUrl(BOMBO_SONIDO));
-        }
+            aux.setMedia(QUrl(BOMBO_SONIDO));
+            aux.play();
+            vectorbombo.insert(0,&aux);
+            vectorbombo.insert(4,&aux);
+            i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
-            vectorHH[0].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[4].setMedia(QUrl(HITHAT_SONIDO));
-        }
+            aux.setMedia(QUrl(HITHAT_SONIDO));
+            aux.play();
+            vectorHH.insert(0,&aux);
+            vectorHH.insert(4,&aux);
+            i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
-            vectorredo[0].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[4].setMedia(QUrl(REDOBLANTE_SONIDO));
-        }
+            aux.setMedia(QUrl(REDOBLANTE_SONIDO));
+            vectorredo.insert(0,&aux);
+            vectorredo.insert(4,&aux);
+            i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
-            vectorcrash[0].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[4].setMedia(QUrl(CRASH_SONIDO));
-        }
+            aux.setMedia(QUrl(CRASH_SONIDO));
+            vectorcrash.insert(0,&aux);
+            vectorcrash.insert(4,&aux);
+            i_lista++;
+        }else i_lista++;
     }
     else if (t == "Corchea") {
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
-            vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[2].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[4].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[6].setMedia(QUrl(BOMBO_SONIDO));
-        }
+           aux.setMedia(QUrl(BOMBO_SONIDO));
+           vectorbombo.insert(0,&aux);
+           vectorbombo.insert(2,&aux);
+           vectorbombo.insert(4,&aux);
+           vectorbombo.insert(6,&aux);
+           i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
-            vectorHH[0].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[2].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[4].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[6].setMedia(QUrl(HITHAT_SONIDO));
-        }
+            aux.setMedia(QUrl(HITHAT_SONIDO));
+            vectorHH.insert(0,&aux);
+            vectorHH.insert(2,&aux);
+            vectorHH.insert(4,&aux);
+            vectorHH.insert(6,&aux);
+            i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
-            vectorredo[0].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[2].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[4].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[6].setMedia(QUrl(REDOBLANTE_SONIDO));
-        }
+            aux.setMedia(QUrl(REDOBLANTE_SONIDO));
+            vectorredo.insert(0,&aux);
+            vectorredo.insert(2,&aux);
+            vectorredo.insert(4,&aux);
+            vectorredo.insert(6,&aux);
+            i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
-            vectorcrash[0].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[2].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[4].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[6].setMedia(QUrl(CRASH_SONIDO));
-        }
+            aux.setMedia(QUrl(CRASH_SONIDO));
+            vectorcrash.insert(0,&aux);
+            vectorcrash.insert(2,&aux);
+            vectorcrash.insert(4,&aux);
+            vectorcrash.insert(6,&aux);
+            i_lista++;
+        }else i_lista++;
     }
     else if (t == "Semi_Corchea") {
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
-            vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[1].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[2].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[3].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[4].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[5].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[6].setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo[7].setMedia(QUrl(BOMBO_SONIDO));
-        }
+            aux.setMedia(QUrl(BOMBO_SONIDO));
+            vectorbombo.insert(0,&aux);
+            vectorbombo.insert(1,&aux);
+            vectorbombo.insert(2,&aux);
+            vectorbombo.insert(3,&aux);
+            vectorbombo.insert(4,&aux);
+            vectorbombo.insert(5,&aux);
+            vectorbombo.insert(6,&aux);
+            vectorbombo.insert(7,&aux);
+            i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
-            vectorHH[0].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[1].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[2].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[3].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[4].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[5].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[6].setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH[7].setMedia(QUrl(HITHAT_SONIDO));
-        }
+            aux.setMedia(QUrl(HITHAT_SONIDO));
+            vectorHH.insert(0,&aux);
+            vectorHH.insert(1,&aux);
+            vectorHH.insert(2,&aux);
+            vectorHH.insert(3,&aux);
+            vectorHH.insert(4,&aux);
+            vectorHH.insert(5,&aux);
+            vectorHH.insert(6,&aux);
+            vectorHH.insert(7,&aux);
+            i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
-            vectorredo[0].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[1].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[2].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[3].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[4].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[5].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[6].setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo[7].setMedia(QUrl(REDOBLANTE_SONIDO));
-        }
+            aux.setMedia(QUrl(REDOBLANTE_SONIDO));
+            vectorredo.insert(0,&aux);
+            vectorredo.insert(1,&aux);
+            vectorredo.insert(2,&aux);
+            vectorredo.insert(3,&aux);
+            vectorredo.insert(4,&aux);
+            vectorredo.insert(5,&aux);
+            vectorredo.insert(6,&aux);
+            vectorredo.insert(7,&aux);
+            i_lista++;
+        }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
-            vectorcrash[0].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[1].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[2].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[3].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[4].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[5].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[6].setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash[7].setMedia(QUrl(CRASH_SONIDO));
-        }
+            aux.setMedia(QUrl(CRASH_SONIDO));
+            vectorcrash.insert(0,&aux);
+            vectorcrash.insert(1,&aux);
+            vectorcrash.insert(2,&aux);
+            vectorcrash.insert(3,&aux);
+            vectorcrash.insert(4,&aux);
+            vectorcrash.insert(5,&aux);
+            vectorcrash.insert(6,&aux);
+            vectorcrash.insert(7,&aux);
+            i_lista++;
+        }else i_lista++;
     }
 }
 
