@@ -215,8 +215,16 @@ void MainWindow::Barrido_Tempo()
 }
 
 void MainWindow::Barrido_Reproduccion(){
+    QMediaPlayer *aux;
+
     for(int i=0;i<7;i++){
-        if(HayBombo==SI) vectorbombo.takeAt(0)->play();
+        if(HayBombo==SI)
+        {
+                aux = vectorbombo.at(0);
+                QMediaContent qp =  aux->media();
+                aux->play();
+                //vectorbombo.takeAt(0)->play();
+        }
         if(HayHH==SI) vectorHH.takeAt(0)->play();
         if(HayRedo==SI) vectorredo.takeAt(0)->play();
         if(HayCrash==SI) vectorcrash.takeAt(0)->play();
