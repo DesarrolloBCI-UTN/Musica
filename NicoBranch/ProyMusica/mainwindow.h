@@ -6,6 +6,7 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QMediaPlayer>
+#include <QMediaPlaylist>
 
 namespace Ui {
 class MainWindow;
@@ -50,6 +51,8 @@ private slots:
     void Get_Tempo();
     void Agregar_Tempo(const char *);
     void Reproducir();
+//    void CargarPlaylist();
+    void on_BotonPlay_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -67,11 +70,19 @@ private:
     QVector<QString> lista_play;
     QString rcv;
     int i_lista;
-    QVector<QMediaPlayer*> vectorbombo;
-    QVector<QMediaPlayer*> vectorcrash;
-    QVector<QMediaPlayer*> vectorredo;
-    QVector<QMediaPlayer*> vectorHH;
-    QVector<QMediaPlayer *> prueba;
+
+//    vectores de carga de sonidos a utilizarse con QUrl
+    QVector<QString> vectorbombo;
+    QVector<QString> vectorcrash;
+    QVector<QString> vectorredo;
+    QVector<QString> vectorHH;
+
+//  Crear reproductores para cada uno
+    QMediaPlayer *reproductorbombo = new QMediaPlayer;
+    QMediaPlayer *reproductorHH = new QMediaPlayer;
+    QMediaPlayer *reproductorredo = new QMediaPlayer;
+    QMediaPlayer *reproductorcrash = new QMediaPlayer;
+
 private:
     void log(QString msg);
     void socket_events();

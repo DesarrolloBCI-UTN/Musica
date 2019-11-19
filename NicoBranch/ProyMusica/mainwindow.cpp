@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QPixmap>
+#include <QMediaPlaylist>
 #include <QMediaPlayer>
 #include <QThread>
 #include "variables.h"
@@ -90,6 +91,7 @@ void MainWindow::on_BotonBombo_clicked()
     QMediaPlayer *reproductor = new QMediaPlayer();
     reproductor->setMedia(QUrl(BOMBO_SONIDO));
     reproductor->play();
+
 //    if(BotonBlanca==SI){
 //        vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
 //        BotonBlanca=NO;
@@ -134,7 +136,7 @@ void MainWindow::on_BotonHiHat_clicked()
 
 void MainWindow::on_BotonRedoblante_clicked()
 {
-    QMediaPlayer *reproductor = new QMediaPlayer();
+    QMediaPlayer *reproductor= new QMediaPlayer();
     reproductor->setMedia(QUrl(REDOBLANTE_SONIDO));
     reproductor->play();
 }
@@ -145,6 +147,12 @@ void MainWindow::on_BotonCrash_clicked()
     reproductor->setMedia(QUrl(CRASH_SONIDO));
     reproductor->play();
 
+}
+
+void MainWindow::on_BotonPlay_clicked()
+{
+    reproductorbombo->pause();
+    PAUSA = SI;
 }
 
 void MainWindow::Barrido_General()
@@ -215,25 +223,34 @@ void MainWindow::Barrido_Tempo()
 }
 
 void MainWindow::Barrido_Reproduccion(){
-    QMediaPlayer *aux;
-
-    for(int i=0;i<7;i++){
-        if(HayBombo==SI)
-        {
-                aux = vectorbombo.at(0);
-                QMediaContent qp =  aux->media();
-                aux->play();
-                //vectorbombo.takeAt(0)->play();
-        }
-        if(HayHH==SI) vectorHH.takeAt(0)->play();
-        if(HayRedo==SI) vectorredo.takeAt(0)->play();
-        if(HayCrash==SI) vectorcrash.takeAt(0)->play();
-//        vectorbombo.play();
-//        vectorcrash.play();
-//        vectorredo.play();
-//        vectorHH.play();
-        i%=7;
+    QString aux;
+//    QSoundEffect *reproductor = new QSoundEffect;     //Para QSoundeffect
+//    for(int i=0;i<7;i++){
+    static int i=0;
+    if(HayBombo==SI){
+        aux = vectorbombo.at(i);
+        reproductorbombo->setMedia(QUrl(aux));
+        reproductorbombo->play();
+        //          reproductor->setSource(QUrl(BOMBO_SONIDO));       //Para QSoundeffect
+        //            reproductor->play();
     }
+    if(HayHH==SI){
+        aux = vectorHH.at(i);
+        reproductorHH->setMedia(QUrl(aux));
+        reproductorHH->play();
+    }
+    if(HayRedo==SI){
+        aux = vectorredo.at(i);
+        reproductorredo->setMedia(QUrl(aux));
+        reproductorredo->play();
+    }
+    if(HayCrash==SI){
+        aux = vectorcrash.at(i);
+        reproductorcrash->setMedia(QUrl(aux));
+        reproductorcrash->play();
+    }
+    i++;
+    i%=7;
 }
 
 void MainWindow::Blanco_general()
@@ -375,176 +392,168 @@ void MainWindow::Get_Tempo(){
 
 void MainWindow::Agregar_Tempo(const char *tempo)
 {
-    QMediaPlayer aux, aux2;
-    aux2.setMedia(QUrl(RUIDO_BLANCO));
+    QString aux, aux2;
+    aux2=QString(RUIDO_BLANCO);
     QString t(tempo);
     if(t == "Blanca") {
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
-            aux.setMedia(QUrl(BOMBO_SONIDO));
-            aux.play();
-            vectorbombo.insert(0,&aux);
-            vectorbombo.fill(&aux2,7);
+            aux=QString(BOMBO_SONIDO);
+            vectorbombo.insert(0,aux);
+            vectorbombo.fill(aux2,7);
             i_lista++;
             }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
-            aux.setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH.insert(0,&aux);
-            vectorHH.fill(&aux2,7);
+            aux=QString(HITHAT_SONIDO);
+            vectorHH.insert(0,aux);
+            vectorHH.fill(aux2,7);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
-            aux.setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo.insert(0,&aux);
-            vectorredo.fill(&aux2,7);
+            aux=QString(REDOBLANTE_SONIDO);
+            vectorredo.insert(0,aux);
+            vectorredo.fill(aux2,7);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
-            aux.setMedia(QUrl(BOMBO_SONIDO));
-            vectorcrash.insert(0,&aux);
-            vectorcrash.fill(&aux2,7);
+            aux=QString(BOMBO_SONIDO);
+            vectorcrash.insert(0,aux);
+            vectorcrash.fill(aux2,7);
             i_lista++;
         }else i_lista++;
     }
     else if (t == "Negra") {
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
-            aux.setMedia(QUrl(BOMBO_SONIDO));
-            aux.play();
-            vectorbombo.insert(0,&aux);
-            vectorbombo.insert(1,&aux2);
-            vectorbombo.insert(2,&aux2);
-            vectorbombo.insert(3,&aux2);
-            vectorbombo.insert(4,&aux);
-            vectorbombo.insert(5,&aux2);
-            vectorbombo.insert(6,&aux2);
-            vectorbombo.insert(7,&aux2);
+            aux=QString(BOMBO_SONIDO);
+            vectorbombo.insert(0,aux);
+            vectorbombo.insert(1,aux2);
+            vectorbombo.insert(2,aux2);
+            vectorbombo.insert(3,aux2);
+            vectorbombo.insert(4,aux);
+            vectorbombo.insert(5,aux2);
+            vectorbombo.insert(6,aux2);
+            vectorbombo.insert(7,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
-            aux.setMedia(QUrl(HITHAT_SONIDO));
-            aux.play();
-            vectorHH.insert(0,&aux);
-            vectorHH.insert(1,&aux2);
-            vectorHH.insert(2,&aux2);
-            vectorHH.insert(3,&aux2);
-            vectorHH.insert(4,&aux);
-            vectorHH.insert(5,&aux2);
-            vectorHH.insert(6,&aux2);
-            vectorHH.insert(7,&aux2);
+            aux=QString(HITHAT_SONIDO);
+            vectorHH.insert(0,aux);
+            vectorHH.insert(1,aux2);
+            vectorHH.insert(2,aux2);
+            vectorHH.insert(3,aux2);
+            vectorHH.insert(4,aux);
+            vectorHH.insert(5,aux2);
+            vectorHH.insert(6,aux2);
+            vectorHH.insert(7,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
-            aux.setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo.insert(0,&aux);
-            vectorredo.insert(1,&aux2);
-            vectorredo.insert(2,&aux2);
-            vectorredo.insert(3,&aux2);
-            vectorredo.insert(4,&aux);
-            vectorredo.insert(5,&aux2);
-            vectorredo.insert(6,&aux2);
-            vectorredo.insert(7,&aux2);
+            aux=QString(REDOBLANTE_SONIDO);
+            vectorredo.insert(0,aux);
+            vectorredo.insert(1,aux2);
+            vectorredo.insert(2,aux2);
+            vectorredo.insert(3,aux2);
+            vectorredo.insert(4,aux);
+            vectorredo.insert(5,aux2);
+            vectorredo.insert(6,aux2);
+            vectorredo.insert(7,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
-            aux.setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash.insert(0,&aux);
-            vectorcrash.insert(1,&aux2);
-            vectorcrash.insert(2,&aux2);
-            vectorcrash.insert(3,&aux2);
-            vectorcrash.insert(4,&aux);
-            vectorcrash.insert(5,&aux2);
-            vectorcrash.insert(6,&aux2);
-            vectorcrash.insert(7,&aux2);
+            aux=QString(CRASH_SONIDO);
+            vectorcrash.insert(0,aux);
+            vectorcrash.insert(1,aux2);
+            vectorcrash.insert(2,aux2);
+            vectorcrash.insert(3,aux2);
+            vectorcrash.insert(4,aux);
+            vectorcrash.insert(5,aux2);
+            vectorcrash.insert(6,aux2);
+            vectorcrash.insert(7,aux2);
             i_lista++;
         }else i_lista++;
     }
     else if (t == "Corchea") {
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
-           aux.setMedia(QUrl(BOMBO_SONIDO));
-           vectorbombo.insert(0,&aux);
-           vectorbombo.insert(1,&aux2);
-           vectorbombo.insert(2,&aux);
-           vectorbombo.insert(3,&aux2);
-           vectorbombo.insert(4,&aux);
-           vectorbombo.insert(5,&aux2);
-           vectorbombo.insert(6,&aux);
-           vectorbombo.insert(7,&aux2);
+           aux=QString(BOMBO_SONIDO);
+           vectorbombo.insert(0,aux);
+           vectorbombo.insert(1,aux2);
+           vectorbombo.insert(2,aux);
+           vectorbombo.insert(3,aux2);
+           vectorbombo.insert(4,aux);
+           vectorbombo.insert(5,aux2);
+           vectorbombo.insert(6,aux);
+           vectorbombo.insert(7,aux2);
            i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
-            aux.setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH.insert(0,&aux);
-            vectorHH.insert(1,&aux2);
-            vectorHH.insert(2,&aux);
-            vectorHH.insert(3,&aux2);
-            vectorHH.insert(4,&aux);
-            vectorHH.insert(5,&aux2);
-            vectorHH.insert(6,&aux);
-            vectorHH.insert(7,&aux2);
+            aux=QString(HITHAT_SONIDO);
+            vectorHH.insert(0,aux);
+            vectorHH.insert(1,aux2);
+            vectorHH.insert(2,aux);
+            vectorHH.insert(3,aux2);
+            vectorHH.insert(4,aux);
+            vectorHH.insert(5,aux2);
+            vectorHH.insert(6,aux);
+            vectorHH.insert(7,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
-            aux.setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo.insert(0,&aux);
-            vectorredo.insert(1,&aux2);
-            vectorredo.insert(2,&aux);
-            vectorredo.insert(3,&aux2);
-            vectorredo.insert(4,&aux);
-            vectorredo.insert(5,&aux2);
-            vectorredo.insert(6,&aux);
-            vectorredo.insert(7,&aux2);
+            aux=QString(REDOBLANTE_SONIDO);
+            vectorredo.insert(0,aux);
+            vectorredo.insert(1,aux2);
+            vectorredo.insert(2,aux);
+            vectorredo.insert(3,aux2);
+            vectorredo.insert(4,aux);
+            vectorredo.insert(5,aux2);
+            vectorredo.insert(6,aux);
+            vectorredo.insert(7,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
-            aux.setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash.insert(0,&aux);
-            vectorcrash.insert(1,&aux2);
-            vectorcrash.insert(2,&aux);
-            vectorcrash.insert(3,&aux2);
-            vectorcrash.insert(4,&aux);
-            vectorcrash.insert(5,&aux2);
-            vectorcrash.insert(6,&aux);
-            vectorcrash.insert(7,&aux2);
+            aux=QString(CRASH_SONIDO);
+            vectorcrash.insert(0,aux);
+            vectorcrash.insert(1,aux2);
+            vectorcrash.insert(2,aux);
+            vectorcrash.insert(3,aux2);
+            vectorcrash.insert(4,aux);
+            vectorcrash.insert(5,aux2);
+            vectorcrash.insert(6,aux);
+            vectorcrash.insert(7,aux2);
             i_lista++;
         }else i_lista++;
     }
     else if (t == "Semi_Corchea") {
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
-            aux.setMedia(QUrl(BOMBO_SONIDO));
-            vectorbombo.fill(&aux,7);
+            aux=QString(BOMBO_SONIDO);
+            vectorbombo.fill(aux,7);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
-            aux.setMedia(QUrl(HITHAT_SONIDO));
-            vectorHH.fill(&aux,7);
+            aux=QString(HITHAT_SONIDO);
+            vectorHH.fill(aux,7);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
-            aux.setMedia(QUrl(REDOBLANTE_SONIDO));
-            vectorredo.fill(&aux,7);
+            aux=QString(REDOBLANTE_SONIDO);
+            vectorredo.fill(aux,7);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
-            aux.setMedia(QUrl(CRASH_SONIDO));
-            vectorcrash.fill(&aux,7);
+            aux=QString(CRASH_SONIDO);
+            vectorcrash.fill(aux,7);
             i_lista++;
         }else i_lista++;
+
     }
 }
 
 void MainWindow::Reproducir()
 {
-    //idea:
     Get_Tempo();
-    int velocidad= tempo/60;    //  A 60bps el timer va a operar a 1000 ms
-    b_reproduccion->start(velocidad*1000);     //debería hacer el barrido de cada vez que aumenta el timer
+    int velocidad=1000; /*((60/tempo)/4)*1000;    //  A 60bps el timer va a operar a 250 ms*/
+    b_reproduccion->start(velocidad);     //el timer no anda a "velocidad", no llega a llamar a la funcion
 
-//    QMediaPlayer *reproductor = new QMediaPlayer();
-//    for(int i = 0; i < i_lista ; i++)
-//    {
-//        reproductor->setMedia(QUrl(lista_play[i]));
-//        reproductor->play();
-//        QThread::msleep(2000);
-//    }
+}
 //    delete reproductor;
 //    ui->Mostrar_Lista->appendPlainText("mostre todo");
-}
+
+

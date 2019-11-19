@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>836</width>
-    <height>671</height>
+    <width>531</width>
+    <height>483</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
           <item>
            <widget class="QLineEdit" name="txtIP">
             <property name="text">
-             <string>192.168.1.29</string>
+             <string>localhost</string>
             </property>
            </widget>
           </item>

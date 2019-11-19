@@ -7,6 +7,7 @@ static int HayBombo = NO;
 static int HayHH = NO;
 static int HayCrash = NO;
 static int HayRedo = NO;
+static int PAUSA = NO;
 //static int BotonBlanca = NO;
 //static int BotonNegra = NO;
 //static int BotonCorchea = NO;
