@@ -151,8 +151,20 @@ void MainWindow::on_BotonCrash_clicked()
 
 void MainWindow::on_BotonPlay_clicked()
 {
-    reproductorbombo->pause();
-    PAUSA = SI;
+    ui->BotonPlay->setStyleSheet(PLAY_VERDE);
+    if(PAUSA == NO){
+        reproductorbombo->stop();
+        reproductorHH->stop();
+        reproductorcrash->stop();
+        reproductorredo->stop();
+        PAUSA = SI;
+    }else{
+        reproductorbombo->play();
+        reproductorcrash->play();
+        reproductorredo->play();
+        reproductorHH->play();
+        PAUSA = NO;
+    }
 }
 
 void MainWindow::Barrido_General()
@@ -227,30 +239,32 @@ void MainWindow::Barrido_Reproduccion(){
 //    QSoundEffect *reproductor = new QSoundEffect;     //Para QSoundeffect
 //    for(int i=0;i<7;i++){
     static int i=0;
-    if(HayBombo==SI){
-        aux = vectorbombo.at(i);
-        reproductorbombo->setMedia(QUrl(aux));
-        reproductorbombo->play();
-        //          reproductor->setSource(QUrl(BOMBO_SONIDO));       //Para QSoundeffect
-        //            reproductor->play();
+    if(PAUSA==NO){
+        if(HayBombo==SI){
+            aux = vectorbombo.at(i);
+            reproductorbombo->setMedia(QUrl(aux));
+            reproductorbombo->play();
+            //          reproductor->setSource(QUrl(BOMBO_SONIDO));       //Para QSoundeffect
+            //            reproductor->play();
+        }
+        if(HayHH==SI){
+            aux = vectorHH.at(i);
+            reproductorHH->setMedia(QUrl(aux));
+            reproductorHH->play();
+        }
+        if(HayRedo==SI){
+            aux = vectorredo.at(i);
+            reproductorredo->setMedia(QUrl(aux));
+            reproductorredo->play();
+        }
+        if(HayCrash==SI){
+            aux = vectorcrash.at(i);
+            reproductorcrash->setMedia(QUrl(aux));
+            reproductorcrash->play();
+        }
+        i++;
+        i%=8;
     }
-    if(HayHH==SI){
-        aux = vectorHH.at(i);
-        reproductorHH->setMedia(QUrl(aux));
-        reproductorHH->play();
-    }
-    if(HayRedo==SI){
-        aux = vectorredo.at(i);
-        reproductorredo->setMedia(QUrl(aux));
-        reproductorredo->play();
-    }
-    if(HayCrash==SI){
-        aux = vectorcrash.at(i);
-        reproductorcrash->setMedia(QUrl(aux));
-        reproductorcrash->play();
-    }
-    i++;
-    i%=7;
 }
 
 void MainWindow::Blanco_general()
