@@ -302,8 +302,10 @@ void MainWindow::seleccion()
     QString Potencia = ui->LE_Potencia_min->text();
 
     //rcv = socket->readAll();
-
-    if(strcmp(rcv.toStdString().c_str(), Potencia.toStdString().c_str()) >= 0)
+    float PotRec, PotSet;
+    PotSet = Potencia.toFloat();
+    PotRec = rcv.toFloat();
+    if(PotRec > PotSet)
     {
         b_instrumentos->stop();
         b_general->stop();

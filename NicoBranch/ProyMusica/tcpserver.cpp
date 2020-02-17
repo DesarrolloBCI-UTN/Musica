@@ -109,9 +109,21 @@ void MainWindow::socket_readyRead()
 {
     while(socket->bytesAvailable())
     {
+        static double prevData=0, currentData;
         QString data = socket->readAll();
         log("socket_readyRead [" + QString::number(data.size()) + "] : \n" + data);
-        rcv = data;
+        currentData = data.toDouble();
+        if(prevData==0){
+            rcv = data;
+            prevData = data.toDouble();
+        }else{
+            if(currentData==prevData){
+                prevData=currentData;
+            }else{
+                rcv = data;
+                prevData = data.toDouble();
+            }
+        }
         seleccion();
     }
 
