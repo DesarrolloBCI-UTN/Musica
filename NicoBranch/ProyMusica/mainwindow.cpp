@@ -415,25 +415,25 @@ void MainWindow::Agregar_Tempo(const char *tempo)
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
             aux=QString(BOMBO_SONIDO);
             vectorbombo.insert(0,aux);
-            vectorbombo.fill(aux2,7);
+            vectorbombo.fill(aux2,8);
             i_lista++;
             }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
             aux=QString(HITHAT_SONIDO);
             vectorHH.insert(0,aux);
-            vectorHH.fill(aux2,7);
+            vectorHH.fill(aux2,8);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
             aux=QString(REDOBLANTE_SONIDO);
             vectorredo.insert(0,aux);
-            vectorredo.fill(aux2,7);
+            vectorredo.fill(aux2,8);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
             aux=QString(BOMBO_SONIDO);
             vectorcrash.insert(0,aux);
-            vectorcrash.fill(aux2,7);
+            vectorcrash.fill(aux2,8);
             i_lista++;
         }else i_lista++;
     }
@@ -448,6 +448,7 @@ void MainWindow::Agregar_Tempo(const char *tempo)
             vectorbombo.insert(5,aux2);
             vectorbombo.insert(6,aux2);
             vectorbombo.insert(7,aux2);
+            vectorbombo.insert(8,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
@@ -460,6 +461,7 @@ void MainWindow::Agregar_Tempo(const char *tempo)
             vectorHH.insert(5,aux2);
             vectorHH.insert(6,aux2);
             vectorHH.insert(7,aux2);
+            vectorHH.insert(8,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
@@ -472,6 +474,7 @@ void MainWindow::Agregar_Tempo(const char *tempo)
             vectorredo.insert(5,aux2);
             vectorredo.insert(6,aux2);
             vectorredo.insert(7,aux2);
+            vectorredo.insert(8,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
@@ -484,6 +487,7 @@ void MainWindow::Agregar_Tempo(const char *tempo)
             vectorcrash.insert(5,aux2);
             vectorcrash.insert(6,aux2);
             vectorcrash.insert(7,aux2);
+            vectorcrash.insert(8,aux2);
             i_lista++;
         }else i_lista++;
     }
@@ -498,6 +502,7 @@ void MainWindow::Agregar_Tempo(const char *tempo)
            vectorbombo.insert(5,aux2);
            vectorbombo.insert(6,aux);
            vectorbombo.insert(7,aux2);
+           vectorbombo.insert(8,aux2);
            i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
@@ -510,6 +515,7 @@ void MainWindow::Agregar_Tempo(const char *tempo)
             vectorHH.insert(5,aux2);
             vectorHH.insert(6,aux);
             vectorHH.insert(7,aux2);
+            vectorHH.insert(8,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
@@ -522,6 +528,7 @@ void MainWindow::Agregar_Tempo(const char *tempo)
             vectorredo.insert(5,aux2);
             vectorredo.insert(6,aux);
             vectorredo.insert(7,aux2);
+            vectorredo.insert(8,aux2);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
@@ -534,28 +541,29 @@ void MainWindow::Agregar_Tempo(const char *tempo)
             vectorcrash.insert(5,aux2);
             vectorcrash.insert(6,aux);
             vectorcrash.insert(7,aux2);
+            vectorcrash.insert(8,aux2);
             i_lista++;
         }else i_lista++;
     }
     else if (t == "Semi_Corchea") {
         if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
             aux=QString(BOMBO_SONIDO);
-            vectorbombo.fill(aux,7);
+            vectorbombo.fill(aux,8);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
             aux=QString(HITHAT_SONIDO);
-            vectorHH.fill(aux,7);
+            vectorHH.fill(aux,8);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
             aux=QString(REDOBLANTE_SONIDO);
-            vectorredo.fill(aux,7);
+            vectorredo.fill(aux,8);
             i_lista++;
         }else i_lista++;
         if(lista_play.data()[--i_lista] == CRASH_SONIDO){
             aux=QString(CRASH_SONIDO);
-            vectorcrash.fill(aux,7);
+            vectorcrash.fill(aux,8);
             i_lista++;
         }else i_lista++;
 
