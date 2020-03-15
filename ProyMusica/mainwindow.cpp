@@ -10,8 +10,10 @@
 #include <QFile>
 #include <QDebug>
 #include <QPixmap>
+#include <QMediaPlaylist>
 #include <QMediaPlayer>
 #include <QThread>
+#include "variables.h"
 
 //----------------------Defines de iconos y background de los botones---------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -40,6 +42,7 @@
 #define HITHAT_SONIDO       "qrc:/sonidos/Closed-Hi-Hat-1.wav"
 #define BOMBO_SONIDO        "qrc:/sonidos/kick_7.wav"
 #define REDOBLANTE_SONIDO   "qrc:/sonidos/Ensoniq-SQ-1-Rock-Snare.wav"
+#define RUIDO_BLANCO        "qrc:/sonidos/nada.mp3"
 //-----------------------------------------------------------------------------------------------------------------------------------
 
 #define TIEMPO_BARRIDO      2000
@@ -49,10 +52,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    connected = false;
+    socket = nullptr;
+    connect(&server, SIGNAL(newConnection()), this, SLOT(server_newConnection()));
+    ui->btnConnect->setFocus();
     b_general = new QTimer();
     b_instrumentos = new QTimer();
     b_tempo = new QTimer();
+    b_reproduccion = new QTimer();
     posicion = 0;
     play = false;
 //    lista_play = new QString();
@@ -66,8 +73,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(b_instrumentos,SIGNAL(timeout()),this,SLOT(Barrido_Instrumentos()));
     connect(b_general,SIGNAL(timeout()),this,SLOT(Barrido_General()));
     connect(b_tempo,SIGNAL(timeout()),this,SLOT(Barrido_Tempo()));
+    connect(b_reproduccion,SIGNAL(timeout()),this,SLOT(Barrido_Reproduccion()));
 
     b_instrumentos->start((ui->CB_Tiempo_barrido->currentIndex() + 1)*1000);
+
 
 }
 
@@ -77,15 +86,45 @@ MainWindow::~MainWindow()
 }
 
 
-//armar array de reproductores
 void MainWindow::on_BotonBombo_clicked()
 {
-    QMediaPlayer *reproductor1 = new QMediaPlayer();
-    QMediaPlayer *reproductor2 = new QMediaPlayer();
-    reproductor1->setMedia(QUrl(BOMBO_SONIDO));
-    reproductor2->setMedia(QUrl(HITHAT_SONIDO));
-    reproductor1->play();
-    reproductor2->play();
+    QMediaPlayer *reproductor = new QMediaPlayer();
+    reproductor->setMedia(QUrl(BOMBO_SONIDO));
+    reproductor->play();
+
+//    if(BotonBlanca==SI){
+//        vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
+//        BotonBlanca=NO;
+//    }
+//    if(BotonNegra==SI){
+//        vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[4].setMedia(QUrl(BOMBO_SONIDO));
+//        BotonNegra=NO;
+//    }
+//    if(BotonCorchea==SI){
+//        vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[2].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[4].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[6].setMedia(QUrl(BOMBO_SONIDO));
+//        BotonCorchea=NO;
+//    }
+//    if(BotonSemiC==SI){
+//        vectorbombo[0].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[1].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[2].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[3].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[4].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[5].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[6].setMedia(QUrl(BOMBO_SONIDO));
+//        vectorbombo[7].setMedia(QUrl(BOMBO_SONIDO));
+//        BotonSemiC=NO;
+//    }
+//    QMediaPlayer *reproductor1 = new QMediaPlayer();
+//    QMediaPlayer *reproductor2 = new QMediaPlayer();
+//    reproductor1->setMedia(QUrl(BOMBO_SONIDO));
+//    reproductor2->setMedia(QUrl(HITHAT_SONIDO));
+//    reproductor1->play();
+//    reproductor2->play();
 }
 
 void MainWindow::on_BotonHiHat_clicked()
@@ -97,12 +136,9 @@ void MainWindow::on_BotonHiHat_clicked()
 
 void MainWindow::on_BotonRedoblante_clicked()
 {
-    QMediaPlayer *reproductor1 = new QMediaPlayer();
-    QMediaPlayer *reproductor2 = new QMediaPlayer();
-    reproductor1->setMedia(QUrl(REDOBLANTE_SONIDO));
-    reproductor2->setMedia(QUrl(HITHAT_SONIDO));
-    reproductor1->play();
-    reproductor2->play();
+    QMediaPlayer *reproductor= new QMediaPlayer();
+    reproductor->setMedia(QUrl(REDOBLANTE_SONIDO));
+    reproductor->play();
 }
 
 void MainWindow::on_BotonCrash_clicked()
@@ -110,8 +146,26 @@ void MainWindow::on_BotonCrash_clicked()
     QMediaPlayer *reproductor = new QMediaPlayer();
     reproductor->setMedia(QUrl(CRASH_SONIDO));
     reproductor->play();
+
 }
 
+void MainWindow::on_BotonPlay_clicked()
+{
+    ui->BotonPlay->setStyleSheet(PLAY_VERDE);
+    if(PAUSA == NO){
+        reproductorbombo->stop();
+        reproductorHH->stop();
+        reproductorcrash->stop();
+        reproductorredo->stop();
+        PAUSA = SI;
+    }else{
+        reproductorbombo->play();
+        reproductorcrash->play();
+        reproductorredo->play();
+        reproductorHH->play();
+        PAUSA = NO;
+    }
+}
 
 void MainWindow::Barrido_General()
 {
@@ -180,9 +234,39 @@ void MainWindow::Barrido_Tempo()
     posicion++;
 }
 
-/*! \fn void MainWindow::Blanco_general()
-    \brief Pone en background en blanco. Solo de los botones de instrumentos y boton de play
-*/
+void MainWindow::Barrido_Reproduccion(){
+    QString aux;
+//    QSoundEffect *reproductor = new QSoundEffect;     //Para QSoundeffect
+//    for(int i=0;i<7;i++){
+    static int i=0;
+    if(PAUSA==NO){
+        if(HayBombo==SI){
+            aux = vectorbombo.at(i);
+            reproductorbombo->setMedia(QUrl(aux));
+            reproductorbombo->play();
+            //          reproductor->setSource(QUrl(BOMBO_SONIDO));       //Para QSoundeffect
+            //            reproductor->play();
+        }
+        if(HayHH==SI){
+            aux = vectorHH.at(i);
+            reproductorHH->setMedia(QUrl(aux));
+            reproductorHH->play();
+        }
+        if(HayRedo==SI){
+            aux = vectorredo.at(i);
+            reproductorredo->setMedia(QUrl(aux));
+            reproductorredo->play();
+        }
+        if(HayCrash==SI){
+            aux = vectorcrash.at(i);
+            reproductorcrash->setMedia(QUrl(aux));
+            reproductorcrash->play();
+        }
+        i++;
+        i%=8;
+    }
+}
+
 void MainWindow::Blanco_general()
 {
     ui->BotonHiHat->setStyleSheet(HITHAT_BLANCO);
@@ -196,9 +280,6 @@ void MainWindow::Blanco_general()
     ui->BotonSemiC->setStyleSheet(SEMIC_BLANCO);
 }
 
-///*! \fn void MainWindow::Blanco_instrumentos()
-//    \brief Pone en background en blanco. Solo de los botones de instrumentos
-//*/
 //void MainWindow::Blanco_instrumentos()
 //{
 //    ui->BotonHiHat->setStyleSheet(HITHAT_BLANCO);
@@ -207,12 +288,12 @@ void MainWindow::Blanco_general()
 //    ui->BotonRedoblante->setStyleSheet(REDOBLANTE_BLANCO);
 //}
 
-///*! \fn void MainWindow::Blanco_tempo()
-//    \brief Pone en background en blanco. Solo de los botones de tempo
-//*/
 //void MainWindow::Blanco_tempo()
 //{
-
+//    ui->BotonBlanca->setStyleSheet(BLANCA_BLANCO);
+//    ui->BotonNegra->setStyleSheet(NEGRA_BLANCO);
+//    ui->BotonCorchea->setStyleSheet(CORCHEA_BLANCO);
+//    ui->BotonSemiC->setStyleSheet(SEMIC_BLANCO);
 //}
 
 void MainWindow::seleccion()
@@ -220,9 +301,11 @@ void MainWindow::seleccion()
     QString *sel = new QString();
     QString Potencia = ui->LE_Potencia_min->text();
 
-    rcv = socket->readAll();
-
-    if(strcmp(rcv.toStdString().c_str(), Potencia.toStdString().c_str()) >= 0)
+    //rcv = socket->readAll();
+    float PotRec, PotSet;
+    PotSet = Potencia.toFloat();
+    PotRec = rcv.toFloat();
+    if(PotRec > PotSet)
     {
         b_instrumentos->stop();
         b_general->stop();
@@ -233,36 +316,40 @@ void MainWindow::seleccion()
 
         switch (posicion) {
         case 0:
-            if(!play)
+            if(!play){
                 Agregar_Instrumento(BOMBO_SONIDO);
-            else
+                HayBombo=SI;
+            }else
                 on_BotonBombo_clicked();
             sel->append("instrumentos");
             break;
         case 1:
-            if(!play)
+            if(!play){
                 Agregar_Instrumento(HITHAT_SONIDO);
-            else
+                HayHH=SI;
+            }else
                 on_BotonHiHat_clicked();
             sel->append("instrumentos");
             break;
         case 2:
-            if(!play)
+            if(!play){
                 Agregar_Instrumento(CRASH_SONIDO);
-            else
+                HayCrash=SI;
+            }else
                 on_BotonCrash_clicked();
             sel->append("instrumentos");
             break;
         case 3:
-            if(!play)
+            if(!play){
                 Agregar_Instrumento(REDOBLANTE_SONIDO);
-            else
+                HayRedo=SI;
+            }else
                 on_BotonRedoblante_clicked();
             sel->append("instrumentos");
             break;
         case 4 :
             ui->BotonPlay->setStyleSheet(PLAY_VERDE);
-//            Reproducir();
+            Reproducir();
             sel->append("play");
             play = true;
             break;
@@ -299,10 +386,6 @@ void MainWindow::seleccion()
 //    delete []sel;
 }
 
-/*! \fn void MainWindow::Agregar_Instrumento(const char* sonido)
-    \brief Carga un vector con los instrumentos que se seleccionan
-    \param sonido: String con la ruta del audio correspondiente al instrumento seleccionado
-*/
 void MainWindow::Agregar_Instrumento(const char* sonido)
 {
 
@@ -318,20 +401,183 @@ void MainWindow::Agregar_Instrumento(const char* sonido)
     i_lista++;
 }
 
+void MainWindow::Get_Tempo(){
+    int a = ui->BPSsb->value();
+    tempo=a;
+}
+
 void MainWindow::Agregar_Tempo(const char *tempo)
 {
-    // Agregar tempo
+    QString aux, aux2;
+    aux2=QString(RUIDO_BLANCO);
+    QString t(tempo);
+    if(t == "Blanca") {
+        if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
+            aux=QString(BOMBO_SONIDO);
+            vectorbombo.insert(0,aux);
+            vectorbombo.fill(aux2,8);
+            i_lista++;
+            }else i_lista++;
+        if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
+            aux=QString(HITHAT_SONIDO);
+            vectorHH.insert(0,aux);
+            vectorHH.fill(aux2,8);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
+            aux=QString(REDOBLANTE_SONIDO);
+            vectorredo.insert(0,aux);
+            vectorredo.fill(aux2,8);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == CRASH_SONIDO){
+            aux=QString(BOMBO_SONIDO);
+            vectorcrash.insert(0,aux);
+            vectorcrash.fill(aux2,8);
+            i_lista++;
+        }else i_lista++;
+    }
+    else if (t == "Negra") {
+        if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
+            aux=QString(BOMBO_SONIDO);
+            vectorbombo.insert(0,aux);
+            vectorbombo.insert(1,aux2);
+            vectorbombo.insert(2,aux2);
+            vectorbombo.insert(3,aux2);
+            vectorbombo.insert(4,aux);
+            vectorbombo.insert(5,aux2);
+            vectorbombo.insert(6,aux2);
+            vectorbombo.insert(7,aux2);
+            vectorbombo.insert(8,aux2);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
+            aux=QString(HITHAT_SONIDO);
+            vectorHH.insert(0,aux);
+            vectorHH.insert(1,aux2);
+            vectorHH.insert(2,aux2);
+            vectorHH.insert(3,aux2);
+            vectorHH.insert(4,aux);
+            vectorHH.insert(5,aux2);
+            vectorHH.insert(6,aux2);
+            vectorHH.insert(7,aux2);
+            vectorHH.insert(8,aux2);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
+            aux=QString(REDOBLANTE_SONIDO);
+            vectorredo.insert(0,aux);
+            vectorredo.insert(1,aux2);
+            vectorredo.insert(2,aux2);
+            vectorredo.insert(3,aux2);
+            vectorredo.insert(4,aux);
+            vectorredo.insert(5,aux2);
+            vectorredo.insert(6,aux2);
+            vectorredo.insert(7,aux2);
+            vectorredo.insert(8,aux2);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == CRASH_SONIDO){
+            aux=QString(CRASH_SONIDO);
+            vectorcrash.insert(0,aux);
+            vectorcrash.insert(1,aux2);
+            vectorcrash.insert(2,aux2);
+            vectorcrash.insert(3,aux2);
+            vectorcrash.insert(4,aux);
+            vectorcrash.insert(5,aux2);
+            vectorcrash.insert(6,aux2);
+            vectorcrash.insert(7,aux2);
+            vectorcrash.insert(8,aux2);
+            i_lista++;
+        }else i_lista++;
+    }
+    else if (t == "Corchea") {
+        if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
+           aux=QString(BOMBO_SONIDO);
+           vectorbombo.insert(0,aux);
+           vectorbombo.insert(1,aux2);
+           vectorbombo.insert(2,aux);
+           vectorbombo.insert(3,aux2);
+           vectorbombo.insert(4,aux);
+           vectorbombo.insert(5,aux2);
+           vectorbombo.insert(6,aux);
+           vectorbombo.insert(7,aux2);
+           vectorbombo.insert(8,aux2);
+           i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
+            aux=QString(HITHAT_SONIDO);
+            vectorHH.insert(0,aux);
+            vectorHH.insert(1,aux2);
+            vectorHH.insert(2,aux);
+            vectorHH.insert(3,aux2);
+            vectorHH.insert(4,aux);
+            vectorHH.insert(5,aux2);
+            vectorHH.insert(6,aux);
+            vectorHH.insert(7,aux2);
+            vectorHH.insert(8,aux2);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
+            aux=QString(REDOBLANTE_SONIDO);
+            vectorredo.insert(0,aux);
+            vectorredo.insert(1,aux2);
+            vectorredo.insert(2,aux);
+            vectorredo.insert(3,aux2);
+            vectorredo.insert(4,aux);
+            vectorredo.insert(5,aux2);
+            vectorredo.insert(6,aux);
+            vectorredo.insert(7,aux2);
+            vectorredo.insert(8,aux2);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == CRASH_SONIDO){
+            aux=QString(CRASH_SONIDO);
+            vectorcrash.insert(0,aux);
+            vectorcrash.insert(1,aux2);
+            vectorcrash.insert(2,aux);
+            vectorcrash.insert(3,aux2);
+            vectorcrash.insert(4,aux);
+            vectorcrash.insert(5,aux2);
+            vectorcrash.insert(6,aux);
+            vectorcrash.insert(7,aux2);
+            vectorcrash.insert(8,aux2);
+            i_lista++;
+        }else i_lista++;
+    }
+    else if (t == "Semi_Corchea") {
+        if(lista_play.data()[--i_lista] == BOMBO_SONIDO){
+            aux=QString(BOMBO_SONIDO);
+            vectorbombo.fill(aux,8);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == HITHAT_SONIDO){
+            aux=QString(HITHAT_SONIDO);
+            vectorHH.fill(aux,8);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == REDOBLANTE_SONIDO){
+            aux=QString(REDOBLANTE_SONIDO);
+            vectorredo.fill(aux,8);
+            i_lista++;
+        }else i_lista++;
+        if(lista_play.data()[--i_lista] == CRASH_SONIDO){
+            aux=QString(CRASH_SONIDO);
+            vectorcrash.fill(aux,8);
+            i_lista++;
+        }else i_lista++;
+
+    }
 }
 
 void MainWindow::Reproducir()
 {
-//    QMediaPlayer *reproductor = new QMediaPlayer();
-//    for(int i = 0; i < i_lista ; i++)
-//    {
-//        reproductor->setMedia(QUrl(lista_play[i]));
-//        reproductor->play();
-//        QThread::msleep(2000);
-//    }
+    Get_Tempo();
+    int velocidad=1000; /*((60/tempo)/4)*1000;    //  A 60bps el timer va a operar a 250 ms*/
+    b_reproduccion->start(velocidad);     //el timer no anda a "velocidad", no llega a llamar a la funcion
+
+}
 //    delete reproductor;
 //    ui->Mostrar_Lista->appendPlainText("mostre todo");
-}
+
+

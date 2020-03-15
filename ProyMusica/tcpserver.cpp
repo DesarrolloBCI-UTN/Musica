@@ -13,7 +13,8 @@ void MainWindow::socket_events()
     connect(socket, SIGNAL(connected()), this, SLOT(socket_connected()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(socket_disconnected()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socket_error()));
-    connect(socket, SIGNAL(readyRead()), this, SLOT(seleccion()));
+//    connect(socket, SIGNAL(readyRead()), this, SLOT(seleccion()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(socket_readyRead()));
     connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socket_stateChanged()));
 }
 
@@ -24,7 +25,7 @@ void MainWindow::on_btnConnect_clicked()
         update(true);
         socket = new QTcpSocket(this);
         socket_events();
-        socket->connectToHost(ui->txtIP->text(), ui->txtPort->text().toInt());
+        socket->connectToHost(ui->txtIP->text(), ui->txtPort->text().toUShort());
     }
     else
     {
@@ -42,7 +43,7 @@ void MainWindow::on_btnConnect_clicked()
 void MainWindow::on_btnListen_clicked()
 {
     update(true);
-    server.listen(QHostAddress(ui->txtIP->text()), ui->txtPort->text().toInt());
+    server.listen(QHostAddress(ui->txtIP->text()), ui->txtPort->text().toUShort());
 }
 
 void MainWindow::update(bool connected)
@@ -108,10 +109,24 @@ void MainWindow::socket_readyRead()
 {
     while(socket->bytesAvailable())
     {
+        static double prevData=0, currentData;
         QString data = socket->readAll();
-        rcv = data;
-        log("socket_readyRead [" + QString::number(data.size()) + "] : \n" + rcv);
+        log("socket_readyRead [" + QString::number(data.size()) + "] : \n" + data);
+        currentData = data.toDouble();
+        if(prevData==0){
+            rcv = data;
+            prevData = data.toDouble();
+        }else{
+            if(currentData==prevData){
+                prevData=currentData;
+            }else{
+                rcv = data;
+                prevData = data.toDouble();
+            }
+        }
+        seleccion();
     }
+
 }
 void MainWindow::socket_stateChanged()
 {

@@ -5,6 +5,8 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTimer>
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 
 namespace Ui {
 class MainWindow;
@@ -40,13 +42,17 @@ private slots:
     void Barrido_General();
     void Barrido_Instrumentos();
     void Barrido_Tempo();
+    void Barrido_Reproduccion();
     void Blanco_general();
 //    void Blanco_instrumentos();
 //    void Blanco_tempo();
     void seleccion();
     void Agregar_Instrumento(const char*);
+    void Get_Tempo();
     void Agregar_Tempo(const char *);
     void Reproducir();
+//    void CargarPlaylist();
+    void on_BotonPlay_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -56,13 +62,26 @@ private:
     QTimer *b_general;
     QTimer *b_instrumentos;
     QTimer *b_tempo;
+    QTimer *b_reproduccion;
 //    QTimer *test_seleccion; //es solo para probar el cambio de barrido
-
+    int tempo;
     char posicion;
     bool play;
     QVector<QString> lista_play;
     QString rcv;
     int i_lista;
+
+//    vectores de carga de sonidos a utilizarse con QUrl
+    QVector<QString> vectorbombo;
+    QVector<QString> vectorcrash;
+    QVector<QString> vectorredo;
+    QVector<QString> vectorHH;
+
+//  Crear reproductores para cada uno
+    QMediaPlayer *reproductorbombo = new QMediaPlayer;
+    QMediaPlayer *reproductorHH = new QMediaPlayer;
+    QMediaPlayer *reproductorredo = new QMediaPlayer;
+    QMediaPlayer *reproductorcrash = new QMediaPlayer;
 
 private:
     void log(QString msg);

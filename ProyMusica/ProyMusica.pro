@@ -31,7 +31,8 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
-        tcpserver.h
+        tcpserver.h \
+    variables.h
 
 FORMS += \
         mainwindow.ui
